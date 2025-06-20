@@ -22,6 +22,9 @@ tooling for condensation and ontological tagging of neuropsychology reports.
 
 ## Using gpt-4o-mini to condense an example report
 
+For this code to run without modifications, environment
+variable `OPENAI_API_KEY` must have a valid setting.
+
 ```{r setup, message=FALSE}
 library(wizrd)
 library(llm4np)
@@ -32,6 +35,10 @@ pretty_rmd <- function(x) {
 
 We have retrieved an example PDF of a neuropsychological (NP) evaluation from 
 [thepeerconsult.com](https://www.thepeerconsult.com/_files/ugd/38c21a_34d817a3c29c43019ea07630ac486230.pdf).
+
+**Note:** The `parse_nppdf` may emit warnings or errors during the table parsing
+phase.  These refer to non-existent files, and seem to be false positives.  They
+should be ignored.
 
 `parse_nppdf` uses `pdftools` and `tabulapdf` to extract text and tables
 from reports.
@@ -45,7 +52,7 @@ We paste the report text into a single character vector for
 convenient processing.
 ```{r dopa}
 nt = gsub("\\n", " ", paste(nels@text, collapse=" "))
-substr(nt, 1, 35)
+substr(nt,1130,1210)
 ```
 
 We also have a view of an autism ontology based on a [2015 paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC4000751/)
@@ -67,14 +74,12 @@ We now use a templated prompt, using the report text and the ontology
 in a summary.
 ```{r lksumm, results="asis"}
 prompted_agent <- ag |> prompt_as("Please summarize the text {txt} in five short paragraphs 
-    of at most 45 words.  Use the 
-    concepts in the 'val' field of {df} as much as possible, choosing the
-    most specific term that is relevant, and when
-    you do use these terms, please append the associated value of the 'tag' field
-    in parentheses, prefixing the tag with 'PTO:'.  After producing the paragraphs,
-    please produce three lists of tags that were used, corresponding to 
-    'strengths', 'weaknesses' and 'needs'.  Do not use headings with the lists, just provide
-    the lists as sentences preceded by the category.") 
+    of at most 45 words.  Use the concepts in the 'val' field of {df} as much as possible, 
+    choosing the most specific term that is relevant, and when you do use these terms, please 
+    append the associated value of the 'tag' field in parentheses, prefixing the tag with 
+    'PTO:'.  After producing the paragraphs, please produce three lists of tags that were 
+    used, corresponding to 'strengths', 'weaknesses' and 'needs'.  Do not use headings with 
+    the lists, just provide the lists as sentences preceded by the category.") 
 prompted_agent |> predict(list(txt=nt, df=nmdf)) |> pretty_rmd()
 ```
 

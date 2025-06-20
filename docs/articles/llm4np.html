@@ -36,6 +36,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="https://github.com/vjcitn/llm4np/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -54,7 +55,7 @@
             
             <h4 data-toc-skip class="date">June 20, 2025</h4>
       
-      <small class="dont-index">Source: <a href="NA/NA/NA/blob/HEAD/vignettes/llm4np.Rmd"><code>vignettes/llm4np.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/vjcitn/llm4np/blob/HEAD/vignettes/llm4np.Rmd"><code>vignettes/llm4np.Rmd</code></a></small>
       <div class="d-none name"><code>llm4np.Rmd</code></div>
     </div>
 
@@ -67,13 +68,15 @@
 <div class="section level3">
 <h3 id="using-gpt-4o-mini-to-condense-an-example-report">Using gpt-4o-mini to condense an example report<a class="anchor" aria-label="anchor" href="#using-gpt-4o-mini-to-condense-an-example-report"></a>
 </h3>
+<p>For this code to run without modifications, environment variable <code>OPENAI_API_KEY</code> must have a valid setting.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lawremi/wizrd" class="external-link">wizrd</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/vjcitn" class="external-link">llm4np</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/vjcitn/llm4np">llm4np</a></span><span class="op">)</span></span>
 <span><span class="va">pretty_rmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">x</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/strwrap.html" class="external-link">strwrap</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"&gt;"</span>, text <span class="op">=</span> <span class="va">_</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>We have retrieved an example PDF of a neuropsychological (NP) evaluation from <a href="https://www.thepeerconsult.com/_files/ugd/38c21a_34d817a3c29c43019ea07630ac486230.pdf" class="external-link">thepeerconsult.com</a>.</p>
+<p><strong>Note:</strong> The <code>parse_nppdf</code> may emit warnings or errors during the table parsing phase. These refer to non-existent files, and seem to be false positives. They should be ignored.</p>
 <p><code>parse_nppdf</code> uses <code>pdftools</code> and <code>tabulapdf</code> to extract text and tables from reports.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nelsonasd</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"nelsonAutDeid.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span>
@@ -86,8 +89,8 @@
 <p>We paste the report text into a single character vector for convenient processing.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nt</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\n"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">nels</span><span class="op">@</span><span class="va">text</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">nt</span>, <span class="fl">1</span>, <span class="fl">35</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "                                   "</span></span></code></pre>
+<span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">nt</span>,<span class="fl">1130</span>,<span class="fl">1210</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] " is a highly gifted 12 year-old boy who is experiencing social, executive functio"</span></span></code></pre>
 <p>We also have a view of an autism ontology based on a <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4000751/" class="external-link">2015 paper</a> by Alexa McCray and colleages.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">nmdf</span><span class="op">)</span></span>
@@ -113,24 +116,20 @@
 <p>We now use a templated prompt, using the report text and the ontology in a summary.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prompted_agent</span> <span class="op">&lt;-</span> <span class="va">ag</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/prompt_as.html" class="external-link">prompt_as</a></span><span class="op">(</span><span class="st">"Please summarize the text {txt} in five short paragraphs </span></span>
-<span><span class="st">    of at most 45 words.  Use the </span></span>
-<span><span class="st">    concepts in the 'val' field of {df} as much as possible, choosing the</span></span>
-<span><span class="st">    most specific term that is relevant, and when</span></span>
-<span><span class="st">    you do use these terms, please append the associated value of the 'tag' field</span></span>
-<span><span class="st">    in parentheses, prefixing the tag with 'PTO:'.  After producing the paragraphs,</span></span>
-<span><span class="st">    please produce three lists of tags that were used, corresponding to </span></span>
-<span><span class="st">    'strengths', 'weaknesses' and 'needs'.  Do not use headings with the lists, just provide</span></span>
-<span><span class="st">    the lists as sentences preceded by the category."</span><span class="op">)</span> </span>
+<span><span class="st">    of at most 45 words.  Use the concepts in the 'val' field of {df} as much as possible, </span></span>
+<span><span class="st">    choosing the most specific term that is relevant, and when you do use these terms, please </span></span>
+<span><span class="st">    append the associated value of the 'tag' field in parentheses, prefixing the tag with </span></span>
+<span><span class="st">    'PTO:'.  After producing the paragraphs, please produce three lists of tags that were </span></span>
+<span><span class="st">    used, corresponding to 'strengths', 'weaknesses' and 'needs'.  Do not use headings with </span></span>
+<span><span class="st">    the lists, just provide the lists as sentences preceded by the category."</span><span class="op">)</span> </span>
 <span><span class="va">prompted_agent</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>txt<span class="op">=</span><span class="va">nt</span>, df<span class="op">=</span><span class="va">nmdf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pretty_rmd</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p>George Smith, a 12-year-old boy, is identified as highly gifted but faces challenges related to autism (PTO: Autism Phenotype), ADHD (PTO: Attention Deficit Disorder with Hyperactivity), and anxiety (PTO: Anxiety). His cognitive strengths, particularly in problem-solving (PTO: Problem Solving Ability) and working memory (PTO: Working Memory), support his academic achievements, placing him at a high school graduate level in basic skills (PTO: Performance in School).</p>
-<p>Despite remarkable cognitive abilities, George’s fine motor skills (PTO: Fine Motor Skills) and processing speed (PTO: Task Performance) are notably vulnerable. He struggles with social perception (PTO: Recognition of Social Norms) and interpersonal interactions (PTO: Interpersonal Interactions), impacting his ability to build connections (PTO: Social Competence) and engage with peers effectively (PTO: Participation in Play Activities).</p>
-<p>George benefits from structured learning environments that accommodate his cognitive needs while providing routine (PTO: Adherence to Rules in the Home) and emotional support. Continued access to therapeutic services (PTO: Comorbidities), including social skills groups (PTO: Social Interest) and individualized education (PTO: Diagnosis), will aid his development in social and emotional domains.</p>
-<p>In therapy, George is encouraged to work on emotional regulation (PTO: Emotional Regulation and Control) and coping skills (PTO: Managing Internal Emotions). Support for academic tasks, focusing on his interests (PTO: Intense Interests) and providing extra time (PTO: Processing Speed), will help nurture his exceptional potential as he navigates social and emotional challenges effectively.</p>
-<p>Ongoing collaboration between parents, educators, and therapists is vital for George’s progress (PTO: Medical History). Adaptive strategies within school and home settings are essential to bolster his strengths while addressing vulnerabilities (PTO: Executive Function), ensuring a balanced approach to his overall development.</p>
-<p>Strengths: Problem Solving Ability (PTO: Problem Solving Ability), Working Memory (PTO: Working Memory), Intense Interests (PTO: Intense Interests), Performance in School (PTO: Performance in School), Adherence to Rules in the Home (PTO: Adherence to Rules in the Home).</p>
-<p>Weaknesses: Autism Phenotype (PTO: Autism Phenotype), Attention Deficit Disorder with Hyperactivity (PTO: Attention Deficit Disorder with Hyperactivity), Fine Motor Skills (PTO: Fine Motor Skills), Task Performance (PTO: Task Performance), Recognition of Social Norms (PTO: Recognition of Social Norms), Interpersonal Interactions (PTO: Interpersonal Interactions), Processing Speed (PTO: Processing Speed).</p>
-<p>Needs: Medical History (PTO: Medical History), Comorbidities (PTO: Comorbidities), Social Interest (PTO: Social Interest), Emotional Regulation and Control (PTO: Emotional Regulation and Control), Executive Function (PTO: Executive Function).</p>
+<p>George Smith is a highly gifted 12-year-old diagnosed with Autism Spectrum Disorder, ADHD, and anxiety, exhibiting exceptional cognitive abilities, especially in verbal, nonverbal, and spatial problem-solving (PTO: “Cognitive Ability”). His performance aligns with that of a typical high school graduate, demanding tailored educational support (PTO: “Learning Disorders”).</p>
+<p>Despite his strengths, George faces considerable challenges primarily in executive functioning, slow processing speed (PTO: “Attention Deficit Disorder with Hyperactivity”), and social communication, impacting peer interactions and emotional regulation (PTO: “Emotional Outbursts”). His rigidity and low tolerance for change complicate transitions and flexibility (PTO: “Reaction to Unexpected Change”).</p>
+<p>Socially, George’s enthusiasm and unique interests may hinder relationship development, as he struggles with engagement and perspective-taking (PTO: “Recognition of Social Norms”). He is often unaware of social cues and tends to dominate conversations with his interests (PTO: “Immoderate Behavior”), increasing isolation and anxiety (PTO: “Social Anxiety”).</p>
+<p>Ongoing support at home and school is crucial for nurturing George’s social skills, emotional wellbeing, and executive functioning (PTO: “Emotional Regulation and Control”). Strategies may include structured activities, specialized social skills training, and accommodations for processing speed within an Individualized Education Program (IEP) (PTO: “Primary Diagnosis”).</p>
+<p>Overall, George has a compelling blend of strengths and vulnerabilities requiring integrated support to thrive academically and socially (PTO: “Social Competence”). Continuous assistance in providing structure and understanding his unique needs will ensure he can leverage his remarkable abilities effectively (PTO: “Planning”).</p>
+<p>Strengths include: Cognitive Ability (PTO: “Cognitive Ability”), Learning Disorders (PTO: “Learning Disorders”), Emotional Regulation and Control (PTO: “Emotional Regulation and Control”), and Social Competence (PTO: “Social Competence”). Weaknesses include: Attention Deficit Disorder with Hyperactivity (PTO: “Attention Deficit Disorder with Hyperactivity”), Immoderate Behavior (PTO: “Immoderate Behavior”), Reaction to Unexpected Change (PTO: “Reaction to Unexpected Change”), and Emotional Outbursts (PTO: “Emotional Outbursts”). Needs include: Primary Diagnosis (PTO: “Primary Diagnosis”), Social Competence (PTO: “Social Competence”), and Planning (PTO: “Planning”).</p>
 </blockquote>
 </div>
 <div class="section level3">
@@ -142,14 +141,14 @@
 <span><span class="va">txt2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\n"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">sq</span><span class="op">@</span><span class="va">text</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span>  <span class="co"># concatenate text</span></span>
 <span><span class="va">prompted_agent</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>txt<span class="op">=</span><span class="va">txt2</span>, df<span class="op">=</span><span class="va">nmdf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pretty_rmd</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p>Joe, an 8-year-old boy with a history of premature birth, Tourette syndrome, and ADHD, currently shows challenges with attention and functioning in an academic setting. His past assessments revealed a consistent need for support, reflecting his vulnerabilities linked to neurodevelopmental disorders, particularly in managing hyperactivity and completing multi-step tasks (PTO: Attention Deficit Disorder with Hyperactivity).</p>
-<p>Observations from his assessment indicated engaging interpersonal skills and a cheerful demeanor. However, Joe frequently struggled with concentration, often losing track of instructions and requiring redirection, which highlights difficulties in executive function processes essential for academic success (PTO: Executive Function).</p>
-<p>The findings from standardized tests place Joe’s cognitive abilities in the borderline range, with a Full Scale IQ of 75, suggesting a decline from previous assessments. Notably, he displayed stronger verbal skills compared to visual processing capabilities, impacting his overall performance and adaptability in learning environments (PTO: Cognitive Ability).</p>
-<p>Joe’s language abilities are variable, showing challenges in both receptive and expressive capacities, particularly when under attention demands. He displays vocal tics and struggles with complex tasks requiring integration of information across modalities, reflecting a need for tailored academic support strategies (PTO: Language Ability).</p>
-<p>Overall, Joe needs structured interventions focusing on improving attention strategies, executive function support, and personalized educational accommodations to foster independence and manage his neuropsychological challenges more effectively in a school setting (PTO: Performance in School).</p>
-<p>Strengths include: Attention to detail (PTO: Planning), Engaging interpersonal skills (PTO: Reciprocity), Cheerful demeanor (PTO: Mood), Strong verbal knowledge base (PTO: Cognitive Ability), Participation in sports (PTO: Use of Free Time).</p>
-<p>Weaknesses encompass: Difficulty with attention and focus (PTO: Attention and Focus), Variable language abilities (PTO: Language Ability), Executive function deficits (PTO: Executive Function), Motor control challenges (PTO: Motor Skills), Low processing speed (PTO: Cognitive Ability).</p>
-<p>Needs: Consistent support with executive functions (PTO: Executive Function), Strategies for task initiation and completion (PTO: Task Completion), Instruction in small group settings (PTO: Performance in School), Behavioral management for tics (PTO: Tics and Mannerisms), Tailored academic schedules (PTO: Planning).</p>
+<p>Joe is an 8-year-old boy with a history of premature birth, Tourette Syndrome, and Attention Deficit Hyperactivity Disorder (ADHD). Current assessments reveal concerns about his attentional control, impacting his academic performance. Joe has a positive family background but faces developmental delays.</p>
+<p>Observations during the assessment showed that Joe appeared engaged, cooperative, and communicative, yet his attention was disrupted by verbal overflow. His cognitive assessment indicates borderline intellectual functioning, with attention, executive function, and motor control being significant areas of difficulty.</p>
+<p>Language abilities were variable; spontaneous speech was adequate, but receptive and expressive skills showed some weaknesses due to attentional issues. Nonverbal processing and visual memory also presented challenges, particularly with tasks requiring complex integration.</p>
+<p>Joe’s adaptive skills ratings are below age expectations, indicating difficulties in self-regulation, planning, and task organization. His medical history includes medication for anxiety and impulsivity, and he faces ongoing challenges related to his ADHD and Tourette syndrome, influencing his overall academic trajectory.</p>
+<p>Recommendations suggest continuing small group instruction in reading and math, external support for task organization, and accommodations for testing due to his processing speed. Regular follow-ups with health and educational providers are essential for ongoing monitoring and support.</p>
+<p>Strengths: Joe displays good verbal fluency (PTO: Ability to Convey Information), is cooperative during assessments (PTO: Personal Traits), and shows appropriate articulation (PTO: Expressive Language).</p>
+<p>Weaknesses: He has attentional deficits (PTO: Attention and Focus), struggles with executive function (PTO: Executive Function), and has motor control difficulties (PTO: Gross Motor Skills).</p>
+<p>Needs: Joe requires small group instruction in academics (PTO: Performance in School), needs behavioral support for planning (PTO: Planning), and benefits from structured routines at home (PTO: Home Life Skills).</p>
 </blockquote>
 </div>
 </div>
