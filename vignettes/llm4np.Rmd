@@ -26,6 +26,7 @@ For this code to run without modifications, environment
 variable `OPENAI_API_KEY` must have a valid setting.
 
 ```{r setup, message=FALSE}
+stopifnot(nchar(Sys.getenv("OPENAI_API_KEY"))>0)
 library(wizrd)
 library(llm4np)
 pretty_rmd <- function(x) {
@@ -34,7 +35,7 @@ pretty_rmd <- function(x) {
 ```
 
 We have retrieved an example PDF of a neuropsychological (NP) evaluation from 
-[thepeerconsult.com](https://www.thepeerconsult.com/_files/ugd/38c21a_34d817a3c29c43019ea07630ac486230.pdf).
+[squarespace.com](https://static1.squarespace.com/static/50a3e393e4b07025e1a4f0d0/t/510b1429e4b0f6b4fb681381/1359680553898/de-identified+report+1.pdf).
 
 **Note:** The `parse_nppdf` may emit warnings or errors during the table parsing
 phase.  These refer to non-existent files, and seem to be false positives.  They
@@ -43,15 +44,15 @@ should be ignored.
 `parse_nppdf` uses `pdftools` and `tabulapdf` to extract text and tables
 from reports.
 ```{r doparse, message=FALSE}
-nelsonasd = system.file("pdfs", "nelsonAutDeid.pdf", package="llm4np")
-nels = parse_nppdf(nelsonasd)
-nels
+deidpath = system.file("pdfs", "de-identified+report+1.pdf", package="llm4np")
+deid = parse_nppdf(deidpath)
+deid
 ```
 
 We paste the report text into a single character vector for
 convenient processing.
 ```{r dopa}
-nt = gsub("\\n", " ", paste(nels@text, collapse=" "))
+nt = gsub("\\n", " ", paste(deid@text, collapse=" "))
 substr(nt,1130,1210)
 ```
 
@@ -83,12 +84,12 @@ prompted_agent <- ag |> prompt_as("Please summarize the text {txt} in five short
 prompted_agent |> predict(list(txt=nt, df=nmdf)) |> pretty_rmd()
 ```
 
-## A second example, no autism diagnosis present
+## A second example
 
 
 ```{r lk2, results="asis"}
-sqspf = system.file("pdfs", "de-identified+report+1.pdf", package="llm4np")
-sq = parse_nppdf(sqspf)
-txt2 = gsub("\\n", " ", paste(sq@text, collapse=" "))  # concatenate text
+pecspa = system.file("pdfs", "PECS-Example-ADHD-Report.pdf", package="llm4np")
+pecs = parse_nppdf(pecspa)
+txt2 = gsub("\\n", " ", paste(pecs@text, collapse=" "))  # concatenate text
 prompted_agent |> predict(list(txt=txt2, df=nmdf)) |> pretty_rmd()
 ```

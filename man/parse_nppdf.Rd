@@ -6,16 +6,22 @@
 \usage{
 parse_nppdf(pdfpath)
 }
+\arguments{
+\item{pdfpath}{character(1) path to a PDF, may be a URL, expected to be a neuropsychology evaluation report}
+}
 \description{
 parse text and extract tables from a pdf
 }
 \note{
 There can be tabulapdf errors thrown that do not register in R.
-They do not seem to be trappable, so be sure you are comfortable with
+They do not seem to be trappable.  Be sure you are comfortable with
 the event noted.
+
+The original URLs for the PDFs included with the package can be found using
+`llm4np:::sqspsrc` and `llm4np:::pecssrc`.
 }
 \examples{
-nelsonasd = system.file("pdfs", "nelsonAutDeid.pdf", package="llm4np")
-nels = parse_nppdf(nelsonasd)
-nels
+deidpath = system.file("pdfs", "de-identified+report+1.pdf", package="llm4np")
+deid = parse_nppdf(deidpath)
+deid
 }

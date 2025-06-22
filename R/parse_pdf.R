@@ -25,16 +25,22 @@ Parsed_NP := new_class(
     }
   )
 
+sqspsrc = "https://static1.squarespace.com/static/50a3e393e4b07025e1a4f0d0/t/510b1429e4b0f6b4fb681381/1359680553898/de-identified+report+1.pdf"
+pecssrc = "https://www.registeredpsychologist.com.au/wp-content/uploads/2020/09/PECS-Example-ADHD-Report.pdf"
+
 #' parse text and extract tables from a pdf
 #' @import pdftools
 #' @import tabulapdf
+#' @param pdfpath character(1) path to a PDF, may be a URL, expected to be a neuropsychology evaluation report
 #' @note There can be tabulapdf errors thrown that do not register in R.
-#' They do not seem to be trappable, so be sure you are comfortable with
+#' They do not seem to be trappable.  Be sure you are comfortable with
 #' the event noted.
+#' @note The original URLs for the PDFs included with the package can be found using
+#' `llm4np:::sqspsrc` and `llm4np:::pecssrc`.
 #' @examples
-#' nelsonasd = system.file("pdfs", "nelsonAutDeid.pdf", package="llm4np")
-#' nels = parse_nppdf(nelsonasd)
-#' nels
+#' deidpath = system.file("pdfs", "de-identified+report+1.pdf", package="llm4np")
+#' deid = parse_nppdf(deidpath)
+#' deid
 #' @export
 parse_nppdf = function(pdfpath) {
   txt = pdftools::pdf_text(pdfpath)
