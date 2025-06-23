@@ -29,7 +29,7 @@ to the parsed text of the NP report, and '{df}' to refer to the ontology table."
 
 #' Shiny app to process example NP reports
 #' @import wizrd
-#' @import shiny
+#' @rawNamespace import(shiny, except=validate)
 #' @param md_dest character(1), path to file to receive markdown from LLM
 #' @param mods character() vector of model names useful with wizrd
 #' @export

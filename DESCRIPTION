@@ -10,7 +10,7 @@ Authors@R:
 Description: Interfaces to LLMs for neuropsychological evaluation reports
 Depends: R (>= 4.0.0), tools, utils, S7
 Suggests: knitr, BiocStyle, testthat, rmarkdown
-Imports: wizrd, pdftools, tabulapdf
+Imports: wizrd, pdftools, tabulapdf, shiny
 License: Artistic-2.0
 VignetteBuilder: knitr
 biocViews: Infrastructure
