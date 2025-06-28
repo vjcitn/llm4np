@@ -14,13 +14,24 @@ lists of tags that were used, corresponding to 'strengths', 'weaknesses' and 'ne
 Use markdown headings with the lists.  Begin each list item with the 'val' 
 element chosen, and then your explanation for why that element was chosen, in parentheses."
 
-baseprompt = "Please summarize the text {txt} in five short paragraphs of at most 45 words.  
+baseprompt_old = "Please summarize the text {txt} in five short paragraphs of at most 45 words.  
   Use the concepts in the 'val' field of {df} as much as possible, choosing the most specific 
 term that is relevant, and when you do use these terms, please append the associated value 
 of the 'tag' field in parentheses, prefixing the tag with 'PTO:'.  After producing the 
 paragraphs, please produce three lists of up to five tags that were used, corresponding to 'strengths', 
 'weaknesses' and 'needs'.  Use headings with the lists and provide the lists as sentences 
 preceded by the category, and add the 'PTO' and tag in parentheses for each item."
+
+baseprompt = "Please summarize the text {txt} in five short paragraphs of at most 45 words.
+Use the concepts in the 'val' field of {df} as much as possible, choosing the most specific 
+term that is relevant.  Do not interrupt your summary with any references to the 
+vocabulary 'tag' or 'val'.  After producing the  paragraphs, please produce three lists 
+of at least five tags that were identified in your analysis of the report, corresponding
+to 'strengths',  'weaknesses' and 'needs' of the subject of the report.  Use headings with
+the lists and provide the lists as sentences  preceded by the category, and add 
+the 'PTO:' prefix, 'tag', and 'val' values in parentheses for each item in each list.
+An example list item in Needs: would be '(PTO:Class_585, Medications)' to make very 
+precise what term has been selected."
 
 baseprompt = gsub("\\n", " ", baseprompt)
 
@@ -34,7 +45,7 @@ to the parsed text of the NP report, and '{df}' to refer to the ontology table."
 #' @param mods character() vector of model names useful with wizrd
 #' @export
 crainFeat = function(md_dest = tempfile(),
-    mods  = c("gpt-4o-mini", "deepseek-r1:14b", 
+    mods  = c("gpt-4.1-mini-2025-04-14", "gpt-4o-mini", "deepseek-r1:14b", 
        "llama3.1:8b", "llama3.2-vision:latest")) {
  
  ui = fluidPage(
@@ -57,7 +68,7 @@ crainFeat = function(md_dest = tempfile(),
        tags$p("Enter your prompt below, or use the text in place.", tags$br(), 
                 "Use the template variable '{txt}' to refer to the parsed text of the NP report",
                 tags$br(), "and '{df}' to refer to the ontology table."),
-       textAreaInput("thepr", label=NULL, value=baseprompt, height="200px", width="500px"),
+       textAreaInput("thepr", label=NULL, value=baseprompt, height="250px", width="500px"),
        actionButton("exec", "Run prompt"),
        htmlOutput("finished")
       ),
@@ -105,8 +116,10 @@ crainFeat = function(md_dest = tempfile(),
     repdata = gsub("\\n", " ", paste(parsedrep@text, collapse = " "))
     print(substr(repdata,1000,1050))
  # choose model, start agent
-    if (input$llmchoice == "gpt-4o-mini") ag = openai_agent(input$llmchoice) 
-    else ag = ollama_agent(input$llmchoice) 
+    mod = input$llmchoice
+    isgpt = (length(grep("gpt", mod))>0)
+    if (isgpt) ag = openai_agent(mod)
+    else ag = ollama_agent(mod)
  # instruct agent
     ag = ag |> instruct("You are a helpful assistant with training in neuropsychology.")
     prompted_agent <- ag |> prompt_as(input$thepr)

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">llm4np</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
       <h1>llm4np: language modeling for neuropsychology reports</h1>
                         <h4 data-toc-skip class="author">Vincent J. Carey, stvjc at channing.harvard.edu</h4>
             
-            <h4 data-toc-skip class="date">June 20, 2025</h4>
+            <h4 data-toc-skip class="date">June 28, 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/vjcitn/llm4np/blob/HEAD/vignettes/llm4np.Rmd"><code>vignettes/llm4np.Rmd</code></a></small>
       <div class="d-none name"><code>llm4np.Rmd</code></div>
@@ -66,33 +66,31 @@
 </h2>
 <p>We use the <a href="https://github.com/lawremi/wizrd" class="external-link">wizrd</a> package to produce tooling for condensation and ontological tagging of neuropsychology reports.</p>
 <div class="section level3">
-<h3 id="using-gpt-4o-mini-to-condense-an-example-report">Using gpt-4o-mini to condense an example report<a class="anchor" aria-label="anchor" href="#using-gpt-4o-mini-to-condense-an-example-report"></a>
+<h3 id="using-gpt-4-1-mini-to-condense-an-example-report">Using gpt-4.1-mini to condense an example report<a class="anchor" aria-label="anchor" href="#using-gpt-4-1-mini-to-condense-an-example-report"></a>
 </h3>
 <p>For this code to run without modifications, environment variable <code>OPENAI_API_KEY</code> must have a valid setting.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lawremi/wizrd" class="external-link">wizrd</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lawremi/wizrd" class="external-link">wizrd</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/vjcitn/llm4np">llm4np</a></span><span class="op">)</span></span>
 <span><span class="va">pretty_rmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">x</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/strwrap.html" class="external-link">strwrap</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"&gt;"</span>, text <span class="op">=</span> <span class="va">_</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>We have retrieved an example PDF of a neuropsychological (NP) evaluation from <a href="https://www.thepeerconsult.com/_files/ugd/38c21a_34d817a3c29c43019ea07630ac486230.pdf" class="external-link">thepeerconsult.com</a>.</p>
+<p>We have retrieved an example PDF of a neuropsychological (NP) evaluation from <a href="https://static1.squarespace.com/static/50a3e393e4b07025e1a4f0d0/t/510b1429e4b0f6b4fb681381/1359680553898/de-identified+report+1.pdf" class="external-link">squarespace.com</a>.</p>
 <p><strong>Note:</strong> The <code>parse_nppdf</code> may emit warnings or errors during the table parsing phase. These refer to non-existent files, and seem to be false positives. They should be ignored.</p>
 <p><code>parse_nppdf</code> uses <code>pdftools</code> and <code>tabulapdf</code> to extract text and tables from reports.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nelsonasd</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"nelsonAutDeid.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span>
-<span><span class="va">nels</span> <span class="op">=</span> <span class="fu"><a href="../reference/parse_nppdf.html">parse_nppdf</a></span><span class="op">(</span><span class="va">nelsonasd</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error : '4.  Educators are also likely to be best able to support George’s emotional, behavioral, and social functioning' does not exist in current working directory ('/Users/vincentcarey/AUTISM/llm4np/vignettes').</span></span>
-<span><span class="co">## Error : '    ognitive Skills             ' does not exist in current working directory ('/Users/vincentcarey/AUTISM/llm4np/vignettes').</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nels</span></span></code></pre></div>
-<pre><code><span><span class="co">## Parsed NP pdf with 14 pages and 5 tables.</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">deidpath</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"de-identified+report+1.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span>
+<span><span class="va">deid</span> <span class="op">=</span> <span class="fu"><a href="../reference/parse_nppdf.html">parse_nppdf</a></span><span class="op">(</span><span class="va">deidpath</span><span class="op">)</span></span>
+<span><span class="va">deid</span></span></code></pre></div>
+<pre><code><span><span class="co">## Parsed NP pdf with 7 pages and 9 tables.</span></span></code></pre>
 <p>We paste the report text into a single character vector for convenient processing.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nt</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\n"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">nels</span><span class="op">@</span><span class="va">text</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nt</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\n"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">deid</span><span class="op">@</span><span class="va">text</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">nt</span>,<span class="fl">1130</span>,<span class="fl">1210</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] " is a highly gifted 12 year-old boy who is experiencing social, executive functio"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] " Tests of Visual Motor Integration (VMI) and Visual Perception (VP); Gray Oral Re"</span></span></code></pre>
 <p>We also have a view of an autism ontology based on a <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4000751/" class="external-link">2015 paper</a> by Alexa McCray and colleages.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">nmdf</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nmdf</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##         tag                                           val</span></span>
@@ -103,52 +101,69 @@
 <span><span class="co">## 5 Class_689                   Psychiatric Hospitalization</span></span>
 <span><span class="co">## 6 Class_138                       Psychologic Indications</span></span></code></pre>
 <p>Now we create an agent that will be prompted to use the ontology in a summary of the NP evaluation.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ag</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/model-constructors.html" class="external-link">openai_agent</a></span><span class="op">(</span><span class="st">"gpt-4o-mini"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ag</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/model-constructors.html" class="external-link">openai_agent</a></span><span class="op">(</span><span class="st">"gpt-4.1-mini-2025-04-14"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/instruct.html" class="external-link">instruct</a></span><span class="op">(</span><span class="st">"You are a helpful assistant with training in neuropsychology."</span><span class="op">)</span></span>
 <span><span class="va">ag</span></span></code></pre></div>
-<pre><code><span><span class="co">## &lt;wizrd::Agent&gt; gpt-4o-mini</span></span>
+<pre><code><span><span class="co">## &lt;wizrd::Agent&gt; gpt-4.1-mini-2025-04-14</span></span>
 <span><span class="co">## @instructions: You are a helpful assistant with training in neuropsychology.</span></span>
 <span><span class="co">## @io: &lt;wizrd::PlainTextFormat&gt; → ← &lt;wizrd::PlainTextFormat&gt;</span></span>
 <span><span class="co">## @tools: </span></span>
 <span><span class="co">## @params: </span></span>
 <span><span class="co">## @backend: &lt;wizrd::OpenAIAPIServer&gt; https://api.openai.com</span></span></code></pre>
 <p>We now use a templated prompt, using the report text and the ontology in a summary.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prompted_agent</span> <span class="op">&lt;-</span> <span class="va">ag</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/prompt_as.html" class="external-link">prompt_as</a></span><span class="op">(</span><span class="st">"Please summarize the text {txt} in five short paragraphs </span></span>
-<span><span class="st">    of at most 45 words.  Use the concepts in the 'val' field of {df} as much as possible, </span></span>
-<span><span class="st">    choosing the most specific term that is relevant, and when you do use these terms, please </span></span>
-<span><span class="st">    append the associated value of the 'tag' field in parentheses, prefixing the tag with </span></span>
-<span><span class="st">    'PTO:'.  After producing the paragraphs, please produce three lists of tags that were </span></span>
-<span><span class="st">    used, corresponding to 'strengths', 'weaknesses' and 'needs'.  Do not use headings with </span></span>
-<span><span class="st">    the lists, just provide the lists as sentences preceded by the category."</span><span class="op">)</span> </span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prompted_agent</span> <span class="op">&lt;-</span> <span class="va">ag</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/prompt_as.html" class="external-link">prompt_as</a></span><span class="op">(</span></span>
+<span><span class="st">"Please summarize the text {txt} in five short paragraphs of at most 45 words.</span></span>
+<span><span class="st">Use the concepts in the 'val' field of {df} as much as possible, choosing the most specific</span></span>
+<span><span class="st">term that is relevant.  Do not interrupt your summary with any references to the</span></span>
+<span><span class="st">vocabulary 'tag' or 'val'.  After producing the  paragraphs, please produce three lists</span></span>
+<span><span class="st">of at least five tags that were identified in your analysis of the report, corresponding</span></span>
+<span><span class="st">to 'strengths',  'weaknesses' and 'needs' of the subject of the report.  Use headings with</span></span>
+<span><span class="st">the lists and provide the lists as sentences  preceded by the category, and add</span></span>
+<span><span class="st">the 'PTO:' prefix, 'tag', and 'val' values in parentheses for each item in each list.</span></span>
+<span><span class="st">An example list item in Needs: would be '(PTO:Class_585, Medications)' to make very</span></span>
+<span><span class="st">precise what term has been selected."</span><span class="op">)</span></span>
 <span><span class="va">prompted_agent</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>txt<span class="op">=</span><span class="va">nt</span>, df<span class="op">=</span><span class="va">nmdf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pretty_rmd</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p>George Smith is a highly gifted 12-year-old diagnosed with Autism Spectrum Disorder, ADHD, and anxiety, exhibiting exceptional cognitive abilities, especially in verbal, nonverbal, and spatial problem-solving (PTO: “Cognitive Ability”). His performance aligns with that of a typical high school graduate, demanding tailored educational support (PTO: “Learning Disorders”).</p>
-<p>Despite his strengths, George faces considerable challenges primarily in executive functioning, slow processing speed (PTO: “Attention Deficit Disorder with Hyperactivity”), and social communication, impacting peer interactions and emotional regulation (PTO: “Emotional Outbursts”). His rigidity and low tolerance for change complicate transitions and flexibility (PTO: “Reaction to Unexpected Change”).</p>
-<p>Socially, George’s enthusiasm and unique interests may hinder relationship development, as he struggles with engagement and perspective-taking (PTO: “Recognition of Social Norms”). He is often unaware of social cues and tends to dominate conversations with his interests (PTO: “Immoderate Behavior”), increasing isolation and anxiety (PTO: “Social Anxiety”).</p>
-<p>Ongoing support at home and school is crucial for nurturing George’s social skills, emotional wellbeing, and executive functioning (PTO: “Emotional Regulation and Control”). Strategies may include structured activities, specialized social skills training, and accommodations for processing speed within an Individualized Education Program (IEP) (PTO: “Primary Diagnosis”).</p>
-<p>Overall, George has a compelling blend of strengths and vulnerabilities requiring integrated support to thrive academically and socially (PTO: “Social Competence”). Continuous assistance in providing structure and understanding his unique needs will ensure he can leverage his remarkable abilities effectively (PTO: “Planning”).</p>
-<p>Strengths include: Cognitive Ability (PTO: “Cognitive Ability”), Learning Disorders (PTO: “Learning Disorders”), Emotional Regulation and Control (PTO: “Emotional Regulation and Control”), and Social Competence (PTO: “Social Competence”). Weaknesses include: Attention Deficit Disorder with Hyperactivity (PTO: “Attention Deficit Disorder with Hyperactivity”), Immoderate Behavior (PTO: “Immoderate Behavior”), Reaction to Unexpected Change (PTO: “Reaction to Unexpected Change”), and Emotional Outbursts (PTO: “Emotional Outbursts”). Needs include: Primary Diagnosis (PTO: “Primary Diagnosis”), Social Competence (PTO: “Social Competence”), and Planning (PTO: “Planning”).</p>
+<p>Joe is an 8-year-old boy with a history of premature birth, Tourette syndrome, and ADHD affecting attention and executive function. He exhibits reduced auditory and visual attention span, working memory challenges, and executive dysfunction impacting task performance and organization. His intellectual functioning is borderline with stronger verbal than nonverbal skills.</p>
+<p>Despite attentional issues, Joe demonstrates effective spontaneous language and adequate verbal memory when supported, though his processing speed and comprehension are below age expectations. His motor skills show impaired fine motor control and balance, influenced by persistent motor tics and difficulties with graphomotor accuracy. Adaptive skills and study habits remain below expectations with noted struggles in planning and completing complex tasks independently.</p>
+<p>Joe’s ability to integrate complex information across modalities is limited, contributing to challenges in academic achievement and daily functional independence. He requires consistent external support for task routines, organization, and self-regulation and benefits from structured, small group academic instruction, with accommodations such as workload reductions and extended time.</p>
+<p>Significant behavioral improvements, likely related to medication, have been observed, though residual hyperactivity and tic behaviors persist. His learning difficulties are consistent with neurodevelopmental vulnerabilities linked to prematurity and neuropsychiatric conditions, requiring coordinated medical, psychiatric, and educational interventions.</p>
+<p>Recommendations emphasize ongoing small group teaching, executive function support, preferential classroom seating, scheduled breaks, careful monitoring of workload, and continued pharmacological and behavioral management. Regular neuropsychological follow-ups are advised to monitor progress and adjust interventions accordingly.</p>
+<p><strong>Strengths:</strong> - Joe communicates spontaneously and fluently, showing good verbal language skills (PTO:Class_376, Language Ability). - Verbal working memory performance is relatively intact under supported conditions (PTO:Class_176, Working Memory). - Joe participates well in sports activities, indicating preserved gross motor skills (PTO:Class_301, Gross Motor Skills). - Improvement in teacher-rated executive function scales and behavior since last evaluation (PTO:Class_455, Executive Function). - Adequate comprehension with multiple repetitions and structured support (PTO:Class_455, Receptive Language).</p>
+<p><strong>Weaknesses:</strong> - Attention deficits impacting auditory and visual span, self-regulation, and task persistence (PTO:Class_163, Attention Deficit Disorder with Hyperactivity). - Borderline intellectual functioning with weaknesses in nonverbal reasoning and processing speed (PTO:Class_519, IQ). - Impaired fine motor skills and praxis with difficulties in handwriting and motor coordination (PTO:Class_301, Motor Skills). - Difficulty integrating complex multi-load information leading to task performance deterioration (PTO:Class_219, Adaptation to Task Complexity). - Below-average adaptive life skills, particularly in study skills and organizing materials (PTO:Class_340, Adaptive Life Skills).</p>
+<p><strong>Needs:</strong> - Continued small group instruction focusing on reading, arithmetic, and executive functioning (PTO:Class_219, Reading and Writing). - External modeling and guided practice for multi-step routines and homework management (PTO:Class_455, Executive Function). - Classroom accommodations including preferential seating, reduced workload, extended time, and frequent breaks (PTO:Class_455, Task Completion). - Ongoing psychiatric and behavioral support for medication management and tic-related psychosocial impacts (PTO:Class_138, Medications). - Structured daily schedules and active prompts to enhance attention and assist with transitions and comprehension (PTO:Class_455, Planning).</p>
 </blockquote>
 </div>
 <div class="section level3">
-<h3 id="a-second-example-no-autism-diagnosis-present">A second example, no autism diagnosis present<a class="anchor" aria-label="anchor" href="#a-second-example-no-autism-diagnosis-present"></a>
+<h3 id="a-second-example-using-gpt-4o-mini">A second example, using gpt-4o-mini<a class="anchor" aria-label="anchor" href="#a-second-example-using-gpt-4o-mini"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sqspf</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"de-identified+report+1.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span>
-<span><span class="va">sq</span> <span class="op">=</span> <span class="fu"><a href="../reference/parse_nppdf.html">parse_nppdf</a></span><span class="op">(</span><span class="va">sqspf</span><span class="op">)</span></span>
-<span><span class="va">txt2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\n"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">sq</span><span class="op">@</span><span class="va">text</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span>  <span class="co"># concatenate text</span></span>
+<p><strong>Note:</strong> The <code>parse_nppdf</code> may emit warnings or errors during the table parsing phase. These refer to non-existent files, and seem to be false positives. They should be ignored.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ag</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/model-constructors.html" class="external-link">openai_agent</a></span><span class="op">(</span><span class="st">"gpt-4o-mini"</span><span class="op">)</span> </span>
+<span><span class="va">prompted_agent</span> <span class="op">&lt;-</span> <span class="va">ag</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/wizrd/man/prompt_as.html" class="external-link">prompt_as</a></span><span class="op">(</span></span>
+<span><span class="st">"Please summarize the text {txt} in three short paragraphs of at most 45 words.</span></span>
+<span><span class="st">Use the concepts in the 'val' field of {df} as much as possible, choosing the most specific</span></span>
+<span><span class="st">term that is relevant."</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pecspa</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"PECS-Example-ADHD-Report.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span>
+<span><span class="va">pecs</span> <span class="op">=</span> <span class="fu"><a href="../reference/parse_nppdf.html">parse_nppdf</a></span><span class="op">(</span><span class="va">pecspa</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: One or more parsing issues, call `problems()` on your data frame for details,</span></span>
+<span><span class="co">## e.g.:</span></span>
+<span><span class="co">##   dat &lt;- vroom(...)</span></span>
+<span><span class="co">##   problems(dat)</span></span></code></pre>
+<p>Error : ‘CONTENTS’ does not exist in current working directory (‘/Users/vincentcarey/AUTISM/llm4np/vignettes’). Error : ‘CURRENT CONCERNS’ does not exist in current working directory (‘/Users/vincentcarey/AUTISM/llm4np/vignettes’). Error : ‘CONCLUSION’ does not exist in current working directory (‘/Users/vincentcarey/AUTISM/llm4np/vignettes’).</p>
+<pre><code><span><span class="co">## Warning: One or more parsing issues, call `problems()` on your data frame for details,</span></span>
+<span><span class="co">## e.g.:</span></span>
+<span><span class="co">##   dat &lt;- vroom(...)</span></span>
+<span><span class="co">##   problems(dat)</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">txt2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\n"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">pecs</span><span class="op">@</span><span class="va">text</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span>  <span class="co"># concatenate text</span></span>
 <span><span class="va">prompted_agent</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>txt<span class="op">=</span><span class="va">txt2</span>, df<span class="op">=</span><span class="va">nmdf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pretty_rmd</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p>Joe is an 8-year-old boy with a history of premature birth, Tourette Syndrome, and Attention Deficit Hyperactivity Disorder (ADHD). Current assessments reveal concerns about his attentional control, impacting his academic performance. Joe has a positive family background but faces developmental delays.</p>
-<p>Observations during the assessment showed that Joe appeared engaged, cooperative, and communicative, yet his attention was disrupted by verbal overflow. His cognitive assessment indicates borderline intellectual functioning, with attention, executive function, and motor control being significant areas of difficulty.</p>
-<p>Language abilities were variable; spontaneous speech was adequate, but receptive and expressive skills showed some weaknesses due to attentional issues. Nonverbal processing and visual memory also presented challenges, particularly with tasks requiring complex integration.</p>
-<p>Joe’s adaptive skills ratings are below age expectations, indicating difficulties in self-regulation, planning, and task organization. His medical history includes medication for anxiety and impulsivity, and he faces ongoing challenges related to his ADHD and Tourette syndrome, influencing his overall academic trajectory.</p>
-<p>Recommendations suggest continuing small group instruction in reading and math, external support for task organization, and accommodations for testing due to his processing speed. Regular follow-ups with health and educational providers are essential for ongoing monitoring and support.</p>
-<p>Strengths: Joe displays good verbal fluency (PTO: Ability to Convey Information), is cooperative during assessments (PTO: Personal Traits), and shows appropriate articulation (PTO: Expressive Language).</p>
-<p>Weaknesses: He has attentional deficits (PTO: Attention and Focus), struggles with executive function (PTO: Executive Function), and has motor control difficulties (PTO: Gross Motor Skills).</p>
-<p>Needs: Joe requires small group instruction in academics (PTO: Performance in School), needs behavioral support for planning (PTO: Planning), and benefits from structured routines at home (PTO: Home Life Skills).</p>
+<p>The comprehensive ADHD report for John Smith is an assessment conducted by Dr. Shane Langsford, addressing concerns related to Attention Deficit Hyperactivity Disorder (ADHD) following a referral from a pediatrician. It outlines a thorough evaluation process, including behavioral assessments, socio-emotional evaluations, and cognitive testing, contributing to John’s primary diagnosis of ADHD, predominantly inattentive type.</p>
+<p>The findings reveal significant difficulties in various areas, such as academic performance, attention, and memory, alongside a developmental history of expressive language challenges. The results indicate comorbidities with specific learning disorders affecting reading and writing, and high levels of anxiety and depression. Recommendations for further assessment and continuous support at home and school emphasize multi-faceted intervention strategies.</p>
 </blockquote>
 </div>
 </div>

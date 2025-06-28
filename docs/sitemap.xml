@@ -1,10 +1,19 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://github.com/vjcitn/llm4np/404.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/abc.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/abcd.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/articles/index.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/articles/llm4np.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/authors.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/deepseek.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/index.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/llama3.1.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/llama3.2vis.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/mistral.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/mistral2nd.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/phi3.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/reference/Parsed_NP.html</loc></url>
+<url><loc>https://github.com/vjcitn/llm4np/reference/crainFeat.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/reference/index.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/reference/nmdf.html</loc></url>
 <url><loc>https://github.com/vjcitn/llm4np/reference/parse_nppdf.html</loc></url>

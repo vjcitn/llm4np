@@ -1,6 +1,6 @@
 Package: llm4np
 Title: Interfaces to LLMs for neuropsychological evaluation reports
-Version: 0.0.2
+Version: 0.0.3
 Authors@R:
     person(given = "Vince",
            family = "Carey",
@@ -8,7 +8,7 @@ Authors@R:
            email = "stvjc@channing.harvard.edu",
            comment = c(ORCID = "0000-0003-4046-0063"))
 Description: Interfaces to LLMs for neuropsychological evaluation reports
-Depends: R (>= 4.0.0), tools, utils, S7
+Depends: R (>= 4.0.0), tools, utils, S7, markdown
 Suggests: knitr, BiocStyle, testthat, rmarkdown
 Imports: wizrd, pdftools, tabulapdf, shiny
 License: Artistic-2.0

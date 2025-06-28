@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">llm4np</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,20 +43,28 @@
     </div>
 
     <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-pdfpath">pdfpath<a class="anchor" aria-label="anchor" href="#arg-pdfpath"></a></dt>
+<dd><p>character(1) path to a PDF, may be a URL, expected to be a neuropsychology evaluation report</p></dd>
+
+</dl></div>
+    <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p>There can be tabulapdf errors thrown that do not register in R.
-They do not seem to be trappable, so be sure you are comfortable with
+They do not seem to be trappable.  Be sure you are comfortable with
 the event noted.</p>
+<p>The original URLs for the PDFs included with the package can be found using
+`llm4np:::sqspsrc` and `llm4np:::pecssrc`.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">nelsonasd</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"nelsonAutDeid.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">nels</span> <span class="op">=</span> <span class="fu">parse_nppdf</span><span class="op">(</span><span class="va">nelsonasd</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Error : '4.	Educators are also likely to be best able to support George’s emotional, behavioral, and social functioning' does not exist in current working directory ('/Users/vincentcarey/AUTISM/llm4np/docs/reference').</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Error : '	ognitive Skills				' does not exist in current working directory ('/Users/vincentcarey/AUTISM/llm4np/docs/reference').</span>
-<span class="r-in"><span><span class="va">nels</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Parsed NP pdf with 14 pages and 5 tables.</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">deidpath</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"pdfs"</span>, <span class="st">"de-identified+report+1.pdf"</span>, package<span class="op">=</span><span class="st">"llm4np"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">deid</span> <span class="op">=</span> <span class="fu">parse_nppdf</span><span class="op">(</span><span class="va">deidpath</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">deid</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parsed NP pdf with 7 pages and 9 tables.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

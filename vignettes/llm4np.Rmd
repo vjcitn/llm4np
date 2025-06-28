@@ -20,7 +20,7 @@ output:
 We use the [wizrd](https://github.com/lawremi/wizrd) package to produce
 tooling for condensation and ontological tagging of neuropsychology reports.
 
-## Using gpt-4o-mini to condense an example report
+## Using gpt-4.1-mini to condense an example report
 
 For this code to run without modifications, environment
 variable `OPENAI_API_KEY` must have a valid setting.
@@ -66,7 +66,7 @@ head(nmdf)
 Now we create an agent that will be prompted to use the ontology in a summary
 of the NP evaluation.
 ```{r chkag}
-ag = openai_agent("gpt-4o-mini") |> 
+ag = openai_agent("gpt-4.1-mini-2025-04-14") |>
    instruct("You are a helpful assistant with training in neuropsychology.")
 ag
 ```
@@ -74,20 +74,33 @@ ag
 We now use a templated prompt, using the report text and the ontology
 in a summary.
 ```{r lksumm, results="asis"}
-prompted_agent <- ag |> prompt_as("Please summarize the text {txt} in five short paragraphs 
-    of at most 45 words.  Use the concepts in the 'val' field of {df} as much as possible, 
-    choosing the most specific term that is relevant, and when you do use these terms, please 
-    append the associated value of the 'tag' field in parentheses, prefixing the tag with 
-    'PTO:'.  After producing the paragraphs, please produce three lists of tags that were 
-    used, corresponding to 'strengths', 'weaknesses' and 'needs'.  Do not use headings with 
-    the lists, just provide the lists as sentences preceded by the category.") 
+prompted_agent <- ag |> prompt_as(
+"Please summarize the text {txt} in five short paragraphs of at most 45 words.
+Use the concepts in the 'val' field of {df} as much as possible, choosing the most specific
+term that is relevant.  Do not interrupt your summary with any references to the
+vocabulary 'tag' or 'val'.  After producing the  paragraphs, please produce three lists
+of at least five tags that were identified in your analysis of the report, corresponding
+to 'strengths',  'weaknesses' and 'needs' of the subject of the report.  Use headings with
+the lists and provide the lists as sentences  preceded by the category, and add
+the 'PTO:' prefix, 'tag', and 'val' values in parentheses for each item in each list.
+An example list item in Needs: would be '(PTO:Class_585, Medications)' to make very
+precise what term has been selected.")
 prompted_agent |> predict(list(txt=nt, df=nmdf)) |> pretty_rmd()
 ```
 
-## A second example
+## A second example, using gpt-4o-mini
 
+**Note:** The `parse_nppdf` may emit warnings or errors during the table parsing
+phase.  These refer to non-existent files, and seem to be false positives.  They
+should be ignored.
 
 ```{r lk2, results="asis"}
+ag = openai_agent("gpt-4o-mini") 
+prompted_agent <- ag |> prompt_as(
+"Please summarize the text {txt} in three short paragraphs of at most 45 words.
+Use the concepts in the 'val' field of {df} as much as possible, choosing the most specific
+term that is relevant."
+)
 pecspa = system.file("pdfs", "PECS-Example-ADHD-Report.pdf", package="llm4np")
 pecs = parse_nppdf(pecspa)
 txt2 = gsub("\\n", " ", paste(pecs@text, collapse=" "))  # concatenate text
